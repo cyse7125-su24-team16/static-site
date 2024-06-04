@@ -3,9 +3,11 @@ kind: Pod
 metadata:
   name: caddy-web-server
 spec:
+  imagePullSecrets:
+    - name: myregistrykey
   containers:
     - name: caddy
-      image: my-custom-caddy:latest
+      image: anu398/caddy-html:latest
       ports:
         - containerPort: 8080
       readinessProbe:
