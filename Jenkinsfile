@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerhub_token'
-        DOCKER_HUB_REPO = '118a3025/aaaa'
+        DOCKER_CREDENTIALS_ID = 'docker_credentials'
+        DOCKER_HUB_REPO = 'anu398/caddy-html'
         DOCKER_TAG = 'latest'
         GITHUB_CREDENTIALS_ID ='github_token'
     }
