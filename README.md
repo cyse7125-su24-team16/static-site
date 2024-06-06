@@ -1,1 +1,1 @@
-# static-site Readme:
+# static-site:
