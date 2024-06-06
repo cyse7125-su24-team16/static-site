@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker_credentials'
-        DOCKER_HUB_REPO = credentials('DOCKER_HUB_REPO')
         DOCKER_TAG = 'latest'
-        GITHUB_CREDENTIALS_ID ='github_token'
+        GITHUB_CREDENTIALS_ID = 'github_token'
+        DOCKER_HUB_REPO = credentials('DOCKER_HUB_REPO')
     }
 
     stages {
@@ -24,10 +24,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', env.DOCKER_CREDENTIALS_ID) {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         sh 'docker buildx create --use'
                         sh 'docker buildx inspect --bootstrap'
-                        sh "docker buildx build -t ${env.DOCKER_HUB_REPO}:${env.DOCKER_TAG} . --push"
+                        sh "docker buildx build -t ${DOCKER_HUB_REPO}:${DOCKER_TAG} . --push"
                     }
                 }
             }
