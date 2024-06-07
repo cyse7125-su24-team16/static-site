@@ -27,7 +27,7 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         sh 'docker buildx create --use'
                         sh 'docker buildx inspect --bootstrap'
-                        sh "docker buildx build -t ${DOCKER_HUB_REPO}:${DOCKER_TAG} . --push"
+                        sh "docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t ${DOCKER_HUB_REPO}:${DOCKER_TAG} . --push"
                     }
                 }
             }
