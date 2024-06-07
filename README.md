@@ -6,4 +6,4 @@ This repository contains the resources needed to build a Docker image for a stat
 
 - **Caddyfile**: Configuration file for the Caddy web server.
 - **index.html**: Static HTML page with team details.
-- **Dockerfile**: Instructions to build the Docker image containing the Caddy server and the static HTML page.
+- **Dockerfile**: Instructions to build the Docker image containing the Caddy server and the static HTML page
