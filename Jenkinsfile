@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker_credentials'
-        DOCKER_TAG = '002'
+        DOCKER_TAG = 'latest'
         GITHUB_CREDENTIALS_ID = 'github_token'
         DOCKER_HUB_REPO = 'anu398/caddy-html'
     }
