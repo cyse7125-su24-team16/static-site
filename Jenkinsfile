@@ -1,26 +1,19 @@
 pipeline {
     agent any
-
+ 
     environment {
         DOCKER_CREDENTIALS_ID = 'docker_credentials'
         DOCKER_TAG = 'latest'
         GITHUB_CREDENTIALS_ID = 'github_token'
         DOCKER_HUB_REPO = 'anu398/caddy-html'
     }
-
-    stages {
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
-            }
-        }
-
+ 
         stage('Checkout') {
             steps {
                 git credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/cyse7125-su24-team16/static-site.git', branch: 'main'
             }
         }
-
+ 
         stage('Check Commit Messages') {
             steps {
                 script {
@@ -28,12 +21,12 @@ pipeline {
                     def log = sh(script: "git log --pretty=format:%s origin/main..HEAD", returnStdout: true).trim()
                     println "Commit messages:"
                     println log  // Print out the commit messages
-                    
+                   
                     def commits = log.split('\n')
-                    
+                   
                     // Regex for Conventional Commits
-                    def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: \S+/
-                    
+                    def pattern = ~/^\s*(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+\s*$/
+                   
                     // Check each commit message
                     for (commit in commits) {
                         if (!pattern.matcher(commit).matches()) {
@@ -43,8 +36,15 @@ pipeline {
                 }
             }
         }
-
-
+ 
+ 
+        stages {
+            stage('Clean Workspace') {
+                steps {
+                    cleanWs()
+                }
+        }
+ 
         stage('Build Docker Image') {
             steps {
                 script {
@@ -57,7 +57,7 @@ pipeline {
             }
         }
     }
-
+ 
     post {
         success {
             echo 'The Docker image has been built and pushed successfully.'
@@ -67,3 +67,4 @@ pipeline {
         }
     }
 }
+ 
