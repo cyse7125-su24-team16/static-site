@@ -19,9 +19,8 @@ pipeline {
             steps {
                 script {
                     // Fetch all commits in the PR
-                    def log = sh(script: "git log --pretty=format:%s origin/main..HEAD", returnStdout: true).trim()
-                    println "Commit messages:"
-                    println log  // Print out the commit messages
+                    def commitMessages = sh(script: "git log --pretty=format:%s origin/main", returnStdout: true).trim()
+                    echo "Commit messages: ${commitMessages}"
                    
                     def commits = log.split('\n')
                    
