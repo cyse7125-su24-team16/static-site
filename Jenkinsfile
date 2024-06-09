@@ -19,10 +19,10 @@ pipeline {
             steps {
                 script {
                     // Fetch all commits in the PR
-                    def commitMessages = sh(script: "git log --pretty=format:%s origin/main", returnStdout: true).trim()
-                    echo "Commit messages: ${commitMessages}"
+                    def latestCommitMessage = sh(script: "git log -1 --pretty=format:%s origin/main", returnStdout: true).trim()
+                    echo "Latest commit message: ${latestCommitMessage}"
                    
-                    def commits = log.split('\n')
+                    def commits = latestCommitMessage.split('\n')
                    
                     // Regex for Conventional Commits
                     def pattern = ~/^\s*(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+\s*$/
