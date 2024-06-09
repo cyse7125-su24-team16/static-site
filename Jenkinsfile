@@ -8,13 +8,6 @@ pipeline {
         DOCKER_HUB_REPO = 'anu398/caddy-html'
     }
 
-    stages {
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
-            }
-        }
-
         stage('Checkout') {
             steps {
                 git credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/cyse7125-su24-team16/static-site.git', branch: 'main'
@@ -32,7 +25,7 @@ pipeline {
                     def commits = log.split('\n')
                     
                     // Regex for Conventional Commits
-                    def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: \S+/
+                    def pattern = ~/^\s*(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+\s*$/
                     
                     // Check each commit message
                     for (commit in commits) {
@@ -44,6 +37,12 @@ pipeline {
             }
         }
 
+        stages {
+            stage('Clean Workspace') {
+                steps {
+                    cleanWs()
+                }
+        }
 
         stage('Build Docker Image') {
             steps {
