@@ -29,7 +29,8 @@ pipeline {
                     def commits = log.split('\n')
                     
                     // Regex for Conventional Commits
-                    def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+$/
+                    def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: \S+/
+
                     
                     // Check each commit message
                     for (commit in commits) {
