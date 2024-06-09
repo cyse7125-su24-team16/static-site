@@ -8,6 +8,7 @@ pipeline {
         DOCKER_HUB_REPO = 'anu398/caddy-html'
     }
  
+    stages {      
         stage('Checkout') {
             steps {
                 git credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/cyse7125-su24-team16/static-site.git', branch: 'main'
@@ -38,11 +39,11 @@ pipeline {
         }
  
  
-        stages {
-            stage('Clean Workspace') {
-                steps {
-                    cleanWs()
-                }
+       
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
         }
  
         stage('Build Docker Image') {
@@ -67,4 +68,3 @@ pipeline {
         }
     }
 }
- 
