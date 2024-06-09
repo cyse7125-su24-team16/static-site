@@ -15,9 +15,28 @@ pipeline {
             }
         }
 
+
         stage('Checkout') {
             steps {
                 git credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/cyse7125-su24-team16/static-site.git', branch: 'main'
+            }
+        }
+
+        stage('Check Commit Messages') {
+            steps {
+                script {
+                    // Fetch all commits in the PR
+                    def log = sh(script: "git log --pretty=format:%s origin/main..HEAD", returnStdout: true).trim()
+                    def commits = log.split('\n')
+                    // Regex for Conventional Commits
+                    def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(\S+\))?: \S+/
+                    // Check each commit message
+                    for (commit in commits) {
+                        if (!pattern.matcher(commit).matches()) {
+                            error "Commit message does not follow Conventional Commits: ${commit}"
+                        }
+                    }
+                }
             }
         }
 
