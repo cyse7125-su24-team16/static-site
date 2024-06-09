@@ -23,24 +23,25 @@ pipeline {
         }
 
         stage('Check Commit Messages') {
-            steps {
-                script {
+        steps {
+            script {
                 // Fetch all commits in the PR
                 def log = sh(script: "git log --pretty=format:%s origin/main..HEAD", returnStdout: true).trim()
                 def commits = log.split('\n')
                 
                 // Regex for Conventional Commits
-                def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(\S+\))?: \S+/
+                def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+$/
                 
                 // Check each commit message
                 for (commit in commits) {
                     if (!pattern.matcher(commit).matches()) {
-                    error "Commit message does not follow Conventional Commits: ${commit}"
+                        error "Commit message does not follow Conventional Commits: ${commit}"
                     }
                 }
             }
         }
     }
+
 
 
         stage('Build Docker Image') {
