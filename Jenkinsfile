@@ -26,11 +26,13 @@ pipeline {
                 script {
                     // Fetch all commits in the PR
                     def log = sh(script: "git log --pretty=format:%s origin/main..HEAD", returnStdout: true).trim()
+                    println "Commit messages:"
+                    println log  // Print out the commit messages
+                    
                     def commits = log.split('\n')
                     
                     // Regex for Conventional Commits
                     def pattern = ~/^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: \S+/
-
                     
                     // Check each commit message
                     for (commit in commits) {
@@ -40,7 +42,8 @@ pipeline {
                     }
                 }
             }
-        } // <- Add closing brace here
+        }
+
 
         stage('Build Docker Image') {
             steps {
