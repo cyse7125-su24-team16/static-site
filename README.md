@@ -1,4 +1,4 @@
-# Static Site Repository:
+# Static Site Repository
 
 This repository contains the resources needed to build a Docker image for a static site hosted using the Caddy web server. The static site includes an HTML page with team details, a Caddyfile for server configuration, and a Dockerfile to build the custom container image.
 
