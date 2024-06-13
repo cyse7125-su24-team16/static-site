@@ -5,11 +5,16 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'docker_credentials'
         DOCKER_TAG = 'latest'
         GITHUB_CREDENTIALS_ID = 'github_token'
-        DOCKER_HUB_REPO = '118a3025/img1'
+        DOCKER_HUB_REPO = 'anu398/caddy-html'
     }
  
     stages {     
         stage('Checkout PR Branch') {
+            when {
+                expression {
+                    return env.CHANGE_ID != null
+                }
+            }
             steps {
                 script {
                     // Fetch the latest changes from the origin using credentials
@@ -29,6 +34,11 @@ pipeline {
         }
 
         stage('Check Commit Messages') {
+            when {
+                expression {
+                    return env.CHANGE_ID != null
+                }
+            }
             steps {
                 script {
                     // Fetch the latest commit message in the PR branch
@@ -63,8 +73,9 @@ pipeline {
  
         stage('Build Docker Image') {
             when {
-                expression {
-                    return env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null
+                allOf {
+                    branch 'main'
+                    not { changeRequest() }
                 }
             }
             steps {
