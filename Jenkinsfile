@@ -8,36 +8,65 @@ pipeline {
         DOCKER_HUB_REPO = '118a3025/img1'
     }
  
-    stages {      
-        stage('Checkout') {
+    stages {     
+        stage('Checkout PR Branch') {
             steps {
-                git credentialsId: GITHUB_CREDENTIALS_ID, url: 'https://github.com/cyse7125-su24-team16/static-site.git', branch: 'main'
+                script {
+                    // Fetch the latest changes from the origin using credentials
+                    withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIALS_ID, usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                        sh 'git config --global credential.helper store'
+                        sh 'echo "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" > ~/.git-credentials'
+                        // Fetch all branches including PR branches
+                        sh 'git fetch origin +refs/pull/*/head:refs/remotes/origin/pr/*'
+                        // Dynamically fetch the current PR branch name using environment variables
+                        def prBranch = env.CHANGE_BRANCH
+                        echo "PR Branch: ${prBranch}"
+                        // Checkout the PR branch
+                        sh "git checkout -B ${prBranch} origin/pr/${env.CHANGE_ID}"
+                    }
+                }
             }
         }
- 
+
         stage('Check Commit Messages') {
             steps {
                 script {
-                    // Fetch all commits in the PR
-                    def latestCommitMessage = sh(script: "git log -1 --pretty=format:%s origin/main", returnStdout: true).trim()
+                    // Fetch the latest commit message in the PR branch
+                    def latestCommitMessage = sh(script: "git log -1 --pretty=format:%s", returnStdout: true).trim()
                     echo "Latest commit message: ${latestCommitMessage}"
-                   
-                    def commits = latestCommitMessage.split('\n')
                    
                     // Regex for Conventional Commits
                     def pattern = ~/^\s*(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+\s*$/
                    
-                    // Check each commit message
-                    for (commit in commits) {
-                        if (!pattern.matcher(commit).matches()) {
-                            error "Commit message does not follow Conventional Commits: ${commit}"
-                        }
+                    // Check the latest commit message
+                    if (!pattern.matcher(latestCommitMessage).matches()) {
+                        error "Commit message does not follow Conventional Commits: ${latestCommitMessage}"
+                    }
+                }
+            }
+        }
+
+        stage('Compare Changes') {
+            steps {
+                script {
+                    // Compare the PR branch with the main branch
+                    def diff = sh(script: 'git diff origin/main...HEAD', returnStdout: true).trim()
+                    echo "Git Diff: ${diff}"
+                    if (diff == "") {
+                        echo "No differences found."
+                    } else {
+                        echo "Differences found:\n${diff}"
                     }
                 }
             }
         }
  
         stage('Build Docker Image') {
+            when {
+                expression {
+                    return env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null
+                }
+            }
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
@@ -54,7 +83,6 @@ pipeline {
                 cleanWs()
             }
         }
-
     }
  
     post {
