@@ -8,9 +8,7 @@ pipeline {
         DOCKER_HUB_REPO = '118a3025/img1'
     }
  
-    stages {      
-        
-                  
+    stages {     
         stage('Checkout PR Branch') {
             steps {
                 script {
@@ -64,6 +62,11 @@ pipeline {
         }
  
         stage('Build Docker Image') {
+            when {
+                expression {
+                    return env.CHANGE_TARGET == 'main' && env.CHANGE_ID != null
+                }
+            }
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
@@ -80,7 +83,6 @@ pipeline {
                 cleanWs()
             }
         }
-
     }
  
     post {
